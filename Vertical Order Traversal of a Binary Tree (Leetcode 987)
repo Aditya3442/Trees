@@ -1,0 +1,65 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+ class Pair {
+    TreeNode node;
+    int index;
+    int level;
+    Pair(TreeNode node , int index , int level) {
+        this.node = node;
+        this.index = index;
+        this.level = level;
+    }
+ }
+class Solution {
+    public List<List<Integer>> verticalTraversal(TreeNode root) {
+        TreeMap<Integer , TreeMap<Integer , PriorityQueue<Integer>>> map= new TreeMap<>();
+        Queue<Pair> q = new LinkedList<>();
+        q.offer(new Pair(root , 0 , 0));
+
+        while(!q.isEmpty()) {
+            Pair p = q.poll();
+            TreeNode node = p.node;
+            int index = p.index;
+            int level = p.level;
+
+            if(!map.containsKey(index)) {
+                map.put(index , new TreeMap<>());
+            }
+            if(!map.get(index).containsKey(level)) {
+                map.get(index).put(level , new PriorityQueue<>());
+            }
+            map.get(index).get(level).offer(node.val);
+            if(node.left != null) {
+                q.offer(new Pair(node.left , index -1 , level + 1));
+            }
+            if(node.right != null) {
+                q.offer(new Pair(node.right , index + 1 , level + 1));
+            }
+        }
+
+        List<List<Integer>> list = new  ArrayList<>();
+        for(TreeMap<Integer , PriorityQueue<Integer>> mpp : map.values()) {
+            List<Integer> l = new ArrayList<>();
+            for(PriorityQueue<Integer> pq : mpp.values()) {
+                while(!pq.isEmpty()) {
+                    l.add(pq.poll());
+                }
+            }
+            list.add(l);
+        }
+        return list;
+    }
+}
